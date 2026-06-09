@@ -167,5 +167,46 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility bg-hero {
+  background: var(--gradient-hero);
+}
+@utility bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+@utility bg-card-gradient {
+  background: var(--gradient-card);
+}
+@utility bg-sidebar-gradient {
+  background: var(--gradient-sidebar);
+}
+@utility shadow-elegant {
+  box-shadow: var(--shadow-elegant);
+}
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+@utility glass {
+  background: oklch(0.22 0.05 262 / 55%);
+  backdrop-filter: blur(12px);
+  border: 1px solid oklch(0.45 0.06 262 / 30%);
+}
+@utility text-gradient {
+  background: linear-gradient(135deg, oklch(0.95 0.02 250), oklch(0.72 0.18 250));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   }
 }

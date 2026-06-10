@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVolunteersRouteImport } from './routes/dashboard.volunteers'
 import { Route as DashboardEventsRouteImport } from './routes/dashboard.events'
+import { Route as DashboardAttendanceRouteImport } from './routes/dashboard.attendance'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -64,6 +65,11 @@ const DashboardEventsRoute = DashboardEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAttendanceRoute = DashboardAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/dashboard/attendance'
     | '/dashboard/events'
     | '/dashboard/volunteers'
     | '/dashboard/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/dashboard/attendance'
     | '/dashboard/events'
     | '/dashboard/volunteers'
     | '/dashboard'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/dashboard/attendance'
     | '/dashboard/events'
     | '/dashboard/volunteers'
     | '/dashboard/'
@@ -207,16 +219,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEventsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/attendance': {
+      id: '/dashboard/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/attendance'
+      preLoaderRoute: typeof DashboardAttendanceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
+  DashboardAttendanceRoute: typeof DashboardAttendanceRoute
   DashboardEventsRoute: typeof DashboardEventsRoute
   DashboardVolunteersRoute: typeof DashboardVolunteersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAttendanceRoute: DashboardAttendanceRoute,
   DashboardEventsRoute: DashboardEventsRoute,
   DashboardVolunteersRoute: DashboardVolunteersRoute,
   DashboardIndexRoute: DashboardIndexRoute,

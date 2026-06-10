@@ -12,7 +12,7 @@ interface Item {
   label: string;
   icon: typeof Heart;
   exact?: boolean;
-  roles?: Role[]; // undefined = all
+  roles?: Role[];
 }
 
 const items: Item[] = [
@@ -26,22 +26,22 @@ const items: Item[] = [
   { to: "/dashboard/settings", label: "Profile", icon: User },
 ];
 
-export function Sidebar() {
+export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { roles, signOut } = useAuth();
   const navigate = useNavigate();
 
-  // Dedup by label per active role set
   const visible = items.filter((it) => !it.roles || it.roles.some((r) => roles.includes(r)));
 
   async function handleSignOut() {
     await signOut();
     toast.success("Signed out");
+    onNavigate?.();
     navigate({ to: "/login" });
   }
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-border/40 bg-sidebar-gradient lg:flex">
+    <div className="flex h-full flex-col bg-sidebar-gradient">
       <div className="flex h-16 items-center gap-2 border-b border-border/40 px-6">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient shadow-glow">
           <Heart className="h-5 w-5 text-primary-foreground" />
@@ -49,13 +49,14 @@ export function Sidebar() {
         <span className="font-display text-lg font-bold tracking-wide">VMS</span>
       </div>
 
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {visible.map((it) => {
           const active = it.exact ? pathname === it.to : pathname.startsWith(it.to);
           return (
             <Link
               key={it.to + it.label}
               to={it.to}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all",
                 active
@@ -78,6 +79,14 @@ export function Sidebar() {
           <LogOut className="h-4 w-4" /> Logout
         </button>
       </div>
+    </div>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="hidden w-64 shrink-0 border-r border-border/40 lg:block">
+      <SidebarContent />
     </aside>
   );
 }

@@ -14,16 +14,348 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attendance: {
+        Row: {
+          event_id: string
+          hours: number
+          id: string
+          marked_at: string
+          marked_by: string | null
+          status: Database["public"]["Enums"]["attendance_status"]
+          volunteer_id: string
+        }
+        Insert: {
+          event_id: string
+          hours?: number
+          id?: string
+          marked_at?: string
+          marked_by?: string | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          volunteer_id: string
+        }
+        Update: {
+          event_id?: string
+          hours?: number
+          id?: string
+          marked_at?: string
+          marked_by?: string | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          volunteer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificates: {
+        Row: {
+          certificate_code: string
+          event_id: string
+          hours: number
+          id: string
+          issued_at: string
+          volunteer_id: string
+        }
+        Insert: {
+          certificate_code?: string
+          event_id: string
+          hours?: number
+          id?: string
+          issued_at?: string
+          volunteer_id: string
+        }
+        Update: {
+          certificate_code?: string
+          event_id?: string
+          hours?: number
+          id?: string
+          issued_at?: string
+          volunteer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_coordinators: {
+        Row: {
+          assigned_at: string
+          coordinator_id: string
+          event_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          coordinator_id: string
+          event_id: string
+        }
+        Update: {
+          assigned_at?: string
+          coordinator_id?: string
+          event_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_coordinators_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_volunteers: {
+        Row: {
+          coordinator_id: string | null
+          event_id: string
+          joined_at: string
+          volunteer_id: string
+        }
+        Insert: {
+          coordinator_id?: string | null
+          event_id: string
+          joined_at?: string
+          volunteer_id: string
+        }
+        Update: {
+          coordinator_id?: string | null
+          event_id?: string
+          joined_at?: string
+          volunteer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_volunteers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          banner_url: string | null
+          capacity: number
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          event_date: string
+          id: string
+          location: string
+          status: Database["public"]["Enums"]["event_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          banner_url?: string | null
+          capacity?: number
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          event_date: string
+          id?: string
+          location: string
+          status?: Database["public"]["Enums"]["event_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          banner_url?: string | null
+          capacity?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          event_date?: string
+          id?: string
+          location?: string
+          status?: Database["public"]["Enums"]["event_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          location: string | null
+          phone: string | null
+          skills: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string
+          id: string
+          location?: string | null
+          phone?: string | null
+          skills?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          location?: string | null
+          phone?: string | null
+          skills?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          event_id: string | null
+          id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_remove_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      admin_set_role: {
+        Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
+      claim_first_admin: { Args: never; Returns: boolean }
+      get_my_roles: {
+        Args: never
+        Returns: Database["public"]["Enums"]["app_role"][]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "coordinator" | "volunteer"
+      attendance_status: "present" | "absent" | "late"
+      event_status: "upcoming" | "ongoing" | "completed" | "cancelled"
+      task_priority: "low" | "medium" | "high"
+      task_status: "todo" | "in-progress" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +482,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "coordinator", "volunteer"],
+      attendance_status: ["present", "absent", "late"],
+      event_status: ["upcoming", "ongoing", "completed", "cancelled"],
+      task_priority: ["low", "medium", "high"],
+      task_status: ["todo", "in-progress", "done"],
+    },
   },
 } as const

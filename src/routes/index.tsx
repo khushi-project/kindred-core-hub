@@ -270,9 +270,9 @@ function LandingPage() {
             <h2 className="font-display text-3xl font-bold">Get in touch</h2>
             <p className="mt-3 text-sm text-muted-foreground">Have a question or want a demo? Send us a message and we'll get back to you.</p>
             <div className="mt-8 space-y-4 text-sm">
-              <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /> hello@volunc.app</div>
-              <div className="flex items-center gap-3"><Phone className="h-4 w-4 text-primary" /> +1 (555) 010-2468</div>
-              <div className="flex items-center gap-3"><MapPin className="h-4 w-4 text-primary" /> 221B Impact Street, Remote-first</div>
+              <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /><span>hello@volunc.app</span></div>
+              <div className="flex items-center gap-3"><Phone className="h-4 w-4 text-primary" /><span>+1 (555) 010-2468</span></div>
+              <div className="flex items-center gap-3"><MapPin className="h-4 w-4 text-primary" /><span>221B Impact Street, Remote-first</span></div>
             </div>
             <div className="mt-6 flex gap-3">
               {[Facebook, Twitter, Linkedin, Instagram].map((I, i) => (

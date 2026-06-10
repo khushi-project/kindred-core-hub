@@ -5,14 +5,17 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Users, UserCog } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { Role } from "@/types";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Sign up — Volunc" }] }),
   component: SignupPage,
 });
+
+const ADMIN_EMAIL = "tom@gmail.com";
 
 function SignupPage() {
   const { signUp } = useAuth();
@@ -22,34 +25,55 @@ function SignupPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [role, setRole] = useState<Role>("volunteer");
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (email.trim().toLowerCase() === ADMIN_EMAIL) {
+      toast.error("Admin accounts cannot sign up. Please sign in instead.");
+      return;
+    }
     if (password.length < 8) { toast.error("Password must be at least 8 characters."); return; }
     if (password !== confirm) { toast.error("Passwords do not match."); return; }
     setLoading(true);
-    const { error } = await signUp(email.trim(), password, full_name.trim());
-    if (error) { setLoading(false); toast.error(error); return; }
-    // Persist phone on profile if provided (profile row created by trigger)
-    if (phone.trim()) {
-      const { data } = await supabase.auth.getUser();
-      if (data.user) {
-        await supabase.from("profiles").update({ phone: phone.trim().slice(0, 30) }).eq("id", data.user.id);
-      }
-    }
+    const { error } = await signUp(email.trim(), password, full_name.trim(), { role, phone: phone.trim() || undefined });
     setLoading(false);
-    toast.success("Account created — welcome to Volunc");
+    if (error) { toast.error(error); return; }
+    toast.success(`Account created — welcome${role === "coordinator" ? ", Coordinator" : ""}!`);
     navigate({ to: "/dashboard" });
   }
 
   return (
     <AuthShell
-      title="Become a volunteer"
-      subtitle="Sign up to join events and track your impact."
+      title="Create your account"
+      subtitle="Join as a Volunteer or Coordinator."
       footer={<>Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></>}
     >
       <form className="space-y-4" onSubmit={onSubmit}>
+        <div className="space-y-2">
+          <Label>Role</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { v: "volunteer" as Role, icon: Users, label: "Volunteer", body: "Join events and earn certificates" },
+              { v: "coordinator" as Role, icon: UserCog, label: "Coordinator", body: "Manage events and volunteers" },
+            ]).map((o) => (
+              <button
+                type="button"
+                key={o.v}
+                onClick={() => setRole(o.v)}
+                className={cn(
+                  "rounded-lg border p-3 text-left transition",
+                  role === o.v ? "border-primary bg-primary/10 shadow-glow" : "border-border/60 hover:border-border"
+                )}
+              >
+                <o.icon className="h-4 w-4 text-primary" />
+                <div className="mt-2 text-sm font-semibold">{o.label}</div>
+                <div className="text-[11px] text-muted-foreground">{o.body}</div>
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
           <Input id="name" required value={full_name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" />
@@ -76,7 +100,7 @@ function SignupPage() {
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create account
         </Button>
         <p className="text-center text-xs text-muted-foreground">
-          Coordinator and Admin accounts are created by an existing Admin.
+          Admin access is restricted to the organization owner.
         </p>
       </form>
     </AuthShell>

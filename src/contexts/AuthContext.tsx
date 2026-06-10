@@ -14,7 +14,7 @@ interface AuthCtx {
   isVolunteer: boolean;
   refresh: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, full_name: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, full_name: string, opts?: { role?: Role; phone?: string }) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
 }
@@ -68,13 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
-  const signUp: AuthCtx["signUp"] = async (email, password, full_name) => {
+  const signUp: AuthCtx["signUp"] = async (email, password, full_name, opts) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name },
+        data: { full_name, role: opts?.role ?? "volunteer", phone: opts?.phone ?? null },
       },
     });
     return { error: error?.message ?? null };

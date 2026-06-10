@@ -14,29 +14,35 @@ export const Route = createFileRoute("/dashboard/")({
 
 function OverviewPage() {
   const { user, isAdmin, isCoordinator, isVolunteer, refresh, roles } = useAuth();
-  const [stats, setStats] = useState({ events: 0, active: 0, completed: 0, volunteers: 0, myEvents: 0, certs: 0 });
+  const [stats, setStats] = useState({ events: 0, upcoming: 0, ongoing: 0, completed: 0, cancelled: 0, volunteers: 0, coordinators: 0, myEvents: 0, certs: 0, active: 0 });
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [hasAdmin, setHasAdmin] = useState<boolean>(true);
 
   async function load() {
     if (!user) return;
-    const [{ data: events }, { data: vols }, { data: myJoins }, { data: certs }, { data: anyAdmin }] = await Promise.all([
+    const [{ data: events }, { data: roleRows }, { data: myJoins }, { data: certs }] = await Promise.all([
       supabase.from("events").select("id, title, event_date, status, location").order("event_date", { ascending: true }),
-      supabase.from("profiles").select("id"),
+      supabase.from("user_roles").select("user_id, role"),
       supabase.from("event_volunteers").select("event_id").eq("volunteer_id", user.id),
       supabase.from("certificates").select("id").eq("volunteer_id", user.id),
-      supabase.from("user_roles").select("user_id").eq("role", "admin").limit(1),
     ]);
+    const volIds = new Set((roleRows ?? []).filter((r: any) => r.role === "volunteer").map((r: any) => r.user_id));
+    const coordIds = new Set((roleRows ?? []).filter((r: any) => r.role === "coordinator").map((r: any) => r.user_id));
+    const adminIds = (roleRows ?? []).filter((r: any) => r.role === "admin");
     setStats({
       events: events?.length ?? 0,
-      active: events?.filter((e) => e.status === "upcoming" || e.status === "ongoing").length ?? 0,
+      upcoming: events?.filter((e) => e.status === "upcoming").length ?? 0,
+      ongoing: events?.filter((e) => e.status === "ongoing").length ?? 0,
       completed: events?.filter((e) => e.status === "completed").length ?? 0,
-      volunteers: vols?.length ?? 0,
+      cancelled: events?.filter((e) => e.status === "cancelled").length ?? 0,
+      active: events?.filter((e) => e.status === "upcoming" || e.status === "ongoing").length ?? 0,
+      volunteers: volIds.size,
+      coordinators: coordIds.size,
       myEvents: myJoins?.length ?? 0,
       certs: certs?.length ?? 0,
     });
     setUpcoming((events ?? []).filter((e) => e.status !== "completed" && e.status !== "cancelled").slice(0, 5));
-    setHasAdmin((anyAdmin?.length ?? 0) > 0);
+    setHasAdmin(adminIds.length > 0);
   }
 
   useEffect(() => { void load(); }, [user?.id]);
@@ -63,13 +69,25 @@ function OverviewPage() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {(isAdmin || isCoordinator) && (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {isAdmin && (
           <>
             <StatCard label="Total events" value={String(stats.events)} icon={Calendar} />
+            <StatCard label="Upcoming" value={String(stats.upcoming)} icon={Calendar} />
+            <StatCard label="Ongoing" value={String(stats.ongoing)} icon={Calendar} />
+            <StatCard label="Completed" value={String(stats.completed)} icon={ClipboardCheck} />
+            <StatCard label="Cancelled" value={String(stats.cancelled)} icon={Calendar} />
+            <StatCard label="Volunteers" value={String(stats.volunteers)} icon={Users} />
+            <StatCard label="Coordinators" value={String(stats.coordinators)} icon={ShieldCheck} />
+            <StatCard label="Certificates" value={String(stats.certs + 0)} icon={Award} />
+          </>
+        )}
+        {isCoordinator && !isAdmin && (
+          <>
             <StatCard label="Active events" value={String(stats.active)} icon={Calendar} />
             <StatCard label="Completed" value={String(stats.completed)} icon={ClipboardCheck} />
             <StatCard label="Volunteers" value={String(stats.volunteers)} icon={Users} />
+            <StatCard label="Total events" value={String(stats.events)} icon={Calendar} />
           </>
         )}
         {isVolunteer && !isAdmin && !isCoordinator && (
@@ -81,6 +99,7 @@ function OverviewPage() {
           </>
         )}
       </div>
+
 
       <div className="rounded-xl border border-border/60 bg-card-gradient p-6">
         <div className="mb-4 flex items-center justify-between">

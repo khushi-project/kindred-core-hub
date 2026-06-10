@@ -19,7 +19,7 @@ const titles: Record<string, string> = {
   "/dashboard/certificates": "Certificates",
   "/dashboard/reports": "Reports",
   "/dashboard/notifications": "Notifications",
-  "/dashboard/settings": "Settings",
+  "/dashboard/settings": "My Profile",
 };
 
 function DashboardLayout() {

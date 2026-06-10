@@ -23,7 +23,7 @@ const items: Item[] = [
   { to: "/dashboard/certificates", label: "Certificates", icon: Award },
   { to: "/dashboard/reports", label: "Reports", icon: BarChart3, roles: ["admin", "coordinator"] },
   { to: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  { to: "/dashboard/settings", label: "Settings", icon: Settings },
+  { to: "/dashboard/settings", label: "Profile", icon: Settings },
 ];
 
 export function Sidebar() {

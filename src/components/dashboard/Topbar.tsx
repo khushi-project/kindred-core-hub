@@ -1,12 +1,16 @@
-import { Bell, LogOut, User as UserIcon } from "lucide-react";
+import { useState } from "react";
+import { Bell, LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { initials } from "@/lib/format";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { SidebarContent } from "./Sidebar";
 
 export function Topbar({ title }: { title: string }) {
   const { profile, user, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const name = profile?.full_name || user?.email || "User";
   const primaryRole = roles[0] ?? "volunteer";
 
@@ -17,8 +21,24 @@ export function Topbar({ title }: { title: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border/40 bg-background/80 px-6 backdrop-blur">
-      <h1 className="font-display text-xl font-semibold">{title}</h1>
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border/40 bg-background/80 px-4 backdrop-blur md:px-6">
+      <div className="flex items-center gap-2">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <button
+              className="rounded-lg border border-border/60 bg-card p-2 hover:bg-accent lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <SheetTitle className="sr-only">Navigation</SheetTitle>
+            <SidebarContent onNavigate={() => setOpen(false)} />
+          </SheetContent>
+        </Sheet>
+        <h1 className="font-display text-lg font-semibold md:text-xl">{title}</h1>
+      </div>
       <div className="flex items-center gap-2">
         <Link
           to="/dashboard/notifications"

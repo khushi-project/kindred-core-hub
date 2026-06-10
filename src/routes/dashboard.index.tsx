@@ -14,29 +14,35 @@ export const Route = createFileRoute("/dashboard/")({
 
 function OverviewPage() {
   const { user, isAdmin, isCoordinator, isVolunteer, refresh, roles } = useAuth();
-  const [stats, setStats] = useState({ events: 0, active: 0, completed: 0, volunteers: 0, myEvents: 0, certs: 0 });
+  const [stats, setStats] = useState({ events: 0, upcoming: 0, ongoing: 0, completed: 0, cancelled: 0, volunteers: 0, coordinators: 0, myEvents: 0, certs: 0, active: 0 });
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [hasAdmin, setHasAdmin] = useState<boolean>(true);
 
   async function load() {
     if (!user) return;
-    const [{ data: events }, { data: vols }, { data: myJoins }, { data: certs }, { data: anyAdmin }] = await Promise.all([
+    const [{ data: events }, { data: roleRows }, { data: myJoins }, { data: certs }] = await Promise.all([
       supabase.from("events").select("id, title, event_date, status, location").order("event_date", { ascending: true }),
-      supabase.from("profiles").select("id"),
+      supabase.from("user_roles").select("user_id, role"),
       supabase.from("event_volunteers").select("event_id").eq("volunteer_id", user.id),
       supabase.from("certificates").select("id").eq("volunteer_id", user.id),
-      supabase.from("user_roles").select("user_id").eq("role", "admin").limit(1),
     ]);
+    const volIds = new Set((roleRows ?? []).filter((r: any) => r.role === "volunteer").map((r: any) => r.user_id));
+    const coordIds = new Set((roleRows ?? []).filter((r: any) => r.role === "coordinator").map((r: any) => r.user_id));
+    const adminIds = (roleRows ?? []).filter((r: any) => r.role === "admin");
     setStats({
       events: events?.length ?? 0,
-      active: events?.filter((e) => e.status === "upcoming" || e.status === "ongoing").length ?? 0,
+      upcoming: events?.filter((e) => e.status === "upcoming").length ?? 0,
+      ongoing: events?.filter((e) => e.status === "ongoing").length ?? 0,
       completed: events?.filter((e) => e.status === "completed").length ?? 0,
-      volunteers: vols?.length ?? 0,
+      cancelled: events?.filter((e) => e.status === "cancelled").length ?? 0,
+      active: events?.filter((e) => e.status === "upcoming" || e.status === "ongoing").length ?? 0,
+      volunteers: volIds.size,
+      coordinators: coordIds.size,
       myEvents: myJoins?.length ?? 0,
       certs: certs?.length ?? 0,
     });
     setUpcoming((events ?? []).filter((e) => e.status !== "completed" && e.status !== "cancelled").slice(0, 5));
-    setHasAdmin((anyAdmin?.length ?? 0) > 0);
+    setHasAdmin(adminIds.length > 0);
   }
 
   useEffect(() => { void load(); }, [user?.id]);

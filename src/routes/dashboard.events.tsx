@@ -100,7 +100,7 @@ function EventsPage() {
             <DialogTrigger asChild>
               <Button className="bg-brand-gradient shadow-glow"><Plus className="mr-1 h-4 w-4" /> New event</Button>
             </DialogTrigger>
-            <EventForm event={editing} onClose={() => { setOpen(false); setEditing(null); load(); }} />
+            <EventForm key={editing?.id ?? "new"} event={editing} onClose={() => { setOpen(false); setEditing(null); load(); }} />
           </Dialog>
         )}
       </div>

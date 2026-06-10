@@ -13,8 +13,11 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+const ADMIN_EMAIL = "tom@gmail.com";
+const ADMIN_PASSWORD = "Tom123pro";
+
 function LoginPage() {
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +26,25 @@ function LoginPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email.trim(), password);
+    const cleanEmail = email.trim().toLowerCase();
+    let { error } = await signIn(cleanEmail, password);
+
+    // First-time admin bootstrap with predefined credentials
+    if (
+      error &&
+      cleanEmail === ADMIN_EMAIL &&
+      password === ADMIN_PASSWORD &&
+      /invalid/i.test(error)
+    ) {
+      const up = await signUp(ADMIN_EMAIL, ADMIN_PASSWORD, "Tom (Admin)");
+      if (!up.error) {
+        const retry = await signIn(ADMIN_EMAIL, ADMIN_PASSWORD);
+        error = retry.error;
+      } else {
+        error = up.error;
+      }
+    }
+
     setLoading(false);
     if (error) { toast.error(error); return; }
     toast.success("Welcome back");

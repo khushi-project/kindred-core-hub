@@ -14,7 +14,7 @@ interface AuthCtx {
   isVolunteer: boolean;
   refresh: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, full_name: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, full_name: string, opts?: { role?: Role; phone?: string }) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
 }

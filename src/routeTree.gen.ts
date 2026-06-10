@@ -17,6 +17,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVolunteersRouteImport } from './routes/dashboard.volunteers'
+import { Route as DashboardTasksRouteImport } from './routes/dashboard.tasks'
 import { Route as DashboardEventsRouteImport } from './routes/dashboard.events'
 import { Route as DashboardAttendanceRouteImport } from './routes/dashboard.attendance'
 
@@ -60,6 +61,11 @@ const DashboardVolunteersRoute = DashboardVolunteersRouteImport.update({
   path: '/volunteers',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardTasksRoute = DashboardTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardEventsRoute = DashboardEventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard': typeof DashboardIndexRoute
 }
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/attendance'
     | '/dashboard/events'
+    | '/dashboard/tasks'
     | '/dashboard/volunteers'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/attendance'
     | '/dashboard/events'
+    | '/dashboard/tasks'
     | '/dashboard/volunteers'
     | '/dashboard'
   id:
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/attendance'
     | '/dashboard/events'
+    | '/dashboard/tasks'
     | '/dashboard/volunteers'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
@@ -212,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardVolunteersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/tasks': {
+      id: '/dashboard/tasks'
+      path: '/tasks'
+      fullPath: '/dashboard/tasks'
+      preLoaderRoute: typeof DashboardTasksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/events': {
       id: '/dashboard/events'
       path: '/events'
@@ -232,6 +251,7 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardAttendanceRoute: typeof DashboardAttendanceRoute
   DashboardEventsRoute: typeof DashboardEventsRoute
+  DashboardTasksRoute: typeof DashboardTasksRoute
   DashboardVolunteersRoute: typeof DashboardVolunteersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -239,6 +259,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAttendanceRoute: DashboardAttendanceRoute,
   DashboardEventsRoute: DashboardEventsRoute,
+  DashboardTasksRoute: DashboardTasksRoute,
   DashboardVolunteersRoute: DashboardVolunteersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }

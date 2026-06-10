@@ -18,7 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVolunteersRouteImport } from './routes/dashboard.volunteers'
 import { Route as DashboardTasksRouteImport } from './routes/dashboard.tasks'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardReportsRouteImport } from './routes/dashboard.reports'
+import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardEventsRouteImport } from './routes/dashboard.events'
+import { Route as DashboardCertificatesRouteImport } from './routes/dashboard.certificates'
 import { Route as DashboardAttendanceRouteImport } from './routes/dashboard.attendance'
 
 const SignupRoute = SignupRouteImport.update({
@@ -66,9 +70,29 @@ const DashboardTasksRoute = DashboardTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardReportsRoute = DashboardReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardEventsRoute = DashboardEventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCertificatesRoute = DashboardCertificatesRouteImport.update({
+  id: '/certificates',
+  path: '/certificates',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAttendanceRoute = DashboardAttendanceRouteImport.update({
@@ -85,7 +109,11 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
+  '/dashboard/certificates': typeof DashboardCertificatesRoute
   '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -97,7 +125,11 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
+  '/dashboard/certificates': typeof DashboardCertificatesRoute
   '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -111,7 +143,11 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
+  '/dashboard/certificates': typeof DashboardCertificatesRoute
   '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/volunteers': typeof DashboardVolunteersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -126,7 +162,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/dashboard/attendance'
+    | '/dashboard/certificates'
     | '/dashboard/events'
+    | '/dashboard/notifications'
+    | '/dashboard/reports'
+    | '/dashboard/settings'
     | '/dashboard/tasks'
     | '/dashboard/volunteers'
     | '/dashboard/'
@@ -138,7 +178,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/dashboard/attendance'
+    | '/dashboard/certificates'
     | '/dashboard/events'
+    | '/dashboard/notifications'
+    | '/dashboard/reports'
+    | '/dashboard/settings'
     | '/dashboard/tasks'
     | '/dashboard/volunteers'
     | '/dashboard'
@@ -151,7 +195,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/dashboard/attendance'
+    | '/dashboard/certificates'
     | '/dashboard/events'
+    | '/dashboard/notifications'
+    | '/dashboard/reports'
+    | '/dashboard/settings'
     | '/dashboard/tasks'
     | '/dashboard/volunteers'
     | '/dashboard/'
@@ -231,11 +279,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTasksRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/reports': {
+      id: '/dashboard/reports'
+      path: '/reports'
+      fullPath: '/dashboard/reports'
+      preLoaderRoute: typeof DashboardReportsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/events': {
       id: '/dashboard/events'
       path: '/events'
       fullPath: '/dashboard/events'
       preLoaderRoute: typeof DashboardEventsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/certificates': {
+      id: '/dashboard/certificates'
+      path: '/certificates'
+      fullPath: '/dashboard/certificates'
+      preLoaderRoute: typeof DashboardCertificatesRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/attendance': {
@@ -250,7 +326,11 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAttendanceRoute: typeof DashboardAttendanceRoute
+  DashboardCertificatesRoute: typeof DashboardCertificatesRoute
   DashboardEventsRoute: typeof DashboardEventsRoute
+  DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardReportsRoute: typeof DashboardReportsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTasksRoute: typeof DashboardTasksRoute
   DashboardVolunteersRoute: typeof DashboardVolunteersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -258,7 +338,11 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAttendanceRoute: DashboardAttendanceRoute,
+  DashboardCertificatesRoute: DashboardCertificatesRoute,
   DashboardEventsRoute: DashboardEventsRoute,
+  DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardReportsRoute: DashboardReportsRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTasksRoute: DashboardTasksRoute,
   DashboardVolunteersRoute: DashboardVolunteersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
@@ -279,3 +363,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

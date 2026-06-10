@@ -5,56 +5,81 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { initials } from "@/lib/format";
 
-export const Route = createFileRoute("/dashboard/settings")({ component: SettingsPage });
+export const Route = createFileRoute("/dashboard/settings")({ component: ProfilePage });
 
-function SettingsPage() {
+function ProfilePage() {
   const { user, profile, refresh, roles } = useAuth();
   const [name, setName] = useState(profile?.full_name ?? "");
   const [phone, setPhone] = useState(profile?.phone ?? "");
-  const [location, setLocation] = useState(profile?.location ?? "");
-  const [skills, setSkills] = useState((profile?.skills ?? []).join(", "));
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setName(profile.full_name ?? "");
       setPhone(profile.phone ?? "");
-      setLocation(profile.location ?? "");
-      setSkills((profile.skills ?? []).join(", "));
     }
   }, [profile?.id]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
+    if (!name.trim()) { toast.error("Name is required"); return; }
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
-      full_name: name,
-      phone: phone || null,
-      location: location || null,
-      skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
+      full_name: name.trim(),
+      phone: phone.trim() || null,
     }).eq("id", user.id);
     setSaving(false);
     if (error) toast.error(error.message);
-    else { toast.success("Profile saved"); refresh(); }
+    else { toast.success("Profile updated"); refresh(); }
   }
+
+  const primaryRole = roles[0] ?? "volunteer";
+  const display = profile?.full_name || user?.email || "User";
 
   return (
     <div className="max-w-2xl space-y-6">
       <div className="rounded-xl border border-border/60 bg-card-gradient p-6">
-        <h2 className="font-display text-lg font-semibold">Profile</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Signed in as {user?.email}. Role{roles.length > 1 ? "s" : ""}: <span className="capitalize text-foreground">{roles.join(", ") || "—"}</span></p>
-        <form onSubmit={save} className="mt-5 space-y-4">
-          <div className="space-y-2"><Label>Full name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2"><Label>Phone</Label><Input value={phone ?? ""} onChange={(e) => setPhone(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Location</Label><Input value={location ?? ""} onChange={(e) => setLocation(e.target.value)} /></div>
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-gradient text-lg font-bold text-primary-foreground shadow-glow">
+            {initials(display)}
           </div>
-          <div className="space-y-2"><Label>Skills (comma-separated)</Label><Textarea value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="Teaching, First Aid, Logistics" /></div>
-          <Button type="submit" disabled={saving} className="bg-brand-gradient shadow-glow">{saving ? "Saving…" : "Save changes"}</Button>
+          <div>
+            <h2 className="font-display text-xl font-semibold">{display}</h2>
+            <div className="mt-1 inline-flex items-center gap-2">
+              <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                {primaryRole}
+              </span>
+              <span className="text-xs text-muted-foreground">{user?.email}</span>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={save} className="mt-6 space-y-4">
+          <div className="space-y-2">
+            <Label>Full name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} required />
+          </div>
+          <div className="space-y-2">
+            <Label>Phone number</Label>
+            <Input type="tel" value={phone ?? ""} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 123 4567" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label>Email <span className="text-xs text-muted-foreground">(read-only)</span></Label>
+              <Input value={user?.email ?? ""} disabled />
+            </div>
+            <div className="space-y-2">
+              <Label>Role <span className="text-xs text-muted-foreground">(read-only)</span></Label>
+              <Input value={primaryRole} disabled className="capitalize" />
+            </div>
+          </div>
+          <Button type="submit" disabled={saving} className="bg-brand-gradient shadow-glow">
+            {saving ? "Saving…" : "Save changes"}
+          </Button>
         </form>
       </div>
     </div>

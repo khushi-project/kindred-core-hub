@@ -1,62 +1,62 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Shield, User, Users } from "lucide-react";
 import { useState } from "react";
-import type { Role } from "@/types";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/signup")({
-  head: () => ({ meta: [{ title: "Create account — Volunc" }, { name: "description", content: "Create your Volunc account." }] }),
+  head: () => ({ meta: [{ title: "Sign up — Volunc" }] }),
   component: SignupPage,
 });
 
-const roles: { id: Role; label: string; desc: string; icon: typeof User }[] = [
-  { id: "admin", label: "Admin", desc: "Manage your organization", icon: Shield },
-  { id: "coordinator", label: "Coordinator", desc: "Run programs & events", icon: Users },
-  { id: "volunteer", label: "Volunteer", desc: "Contribute your time", icon: User },
-];
-
 function SignupPage() {
-  const [role, setRole] = useState<Role>("volunteer");
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+  const [full_name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (password.length < 8) { toast.error("Password must be at least 8 characters."); return; }
+    setLoading(true);
+    const { error } = await signUp(email.trim(), password, full_name.trim());
+    setLoading(false);
+    if (error) { toast.error(error); return; }
+    toast.success("Account created — welcome to Volunc");
+    navigate({ to: "/dashboard" });
+  }
+
   return (
     <AuthShell
-      title="Create your account"
-      subtitle="Get started with Volunc in under a minute."
+      title="Become a volunteer"
+      subtitle="Sign up to join events and track your impact."
       footer={<>Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></>}
     >
-      <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-        <div>
-          <Label className="mb-3 block">I am joining as</Label>
-          <div className="grid grid-cols-3 gap-2">
-            {roles.map((r) => (
-              <button key={r.id} type="button" onClick={() => setRole(r.id)}
-                className={cn(
-                  "rounded-xl border p-3 text-left transition-all",
-                  role === r.id ? "border-primary bg-primary/10 shadow-glow" : "border-border/60 hover:border-border"
-                )}>
-                <r.icon className="h-4 w-4 text-primary" />
-                <div className="mt-2 text-sm font-semibold">{r.label}</div>
-                <div className="text-[11px] text-muted-foreground">{r.desc}</div>
-              </button>
-            ))}
-          </div>
-        </div>
+      <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
-          <Input id="name" placeholder="Jane Doe" />
+          <Input id="name" required value={full_name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Work email</Label>
-          <Input id="email" type="email" placeholder="you@organization.org" />
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="At least 8 characters" />
+          <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
         </div>
-        <Button type="submit" className="w-full bg-brand-gradient shadow-glow hover:opacity-90">Create account</Button>
+        <Button type="submit" disabled={loading} className="w-full bg-brand-gradient shadow-glow hover:opacity-90">
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create account
+        </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          Coordinator and Admin accounts are created by an existing Admin.
+        </p>
       </form>
     </AuthShell>
   );

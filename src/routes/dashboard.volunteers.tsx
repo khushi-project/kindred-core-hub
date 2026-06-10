@@ -1,128 +1,148 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { volunteers } from "@/mock-data/volunteers";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Filter, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { formatNumber } from "@/utils/format";
+import { toast } from "sonner";
+import { initials } from "@/lib/format";
+import { ShieldCheck, ShieldOff, UserPlus } from "lucide-react";
+import type { Role } from "@/types";
 
 export const Route = createFileRoute("/dashboard/volunteers")({
   component: VolunteersPage,
 });
 
+interface Row { id: string; full_name: string; email: string; roles: Role[]; }
+
 function VolunteersPage() {
-  const [query, setQuery] = useState("");
-  const filtered = volunteers.filter((v) =>
-    `${v.name} ${v.email} ${v.skills.join(" ")}`.toLowerCase().includes(query.toLowerCase())
+  const { isAdmin } = useAuth();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [q, setQ] = useState("");
+
+  async function load() {
+    const [{ data: profs }, { data: roles }] = await Promise.all([
+      supabase.from("profiles").select("id, full_name, email"),
+      supabase.from("user_roles").select("user_id, role"),
+    ]);
+    const map = new Map<string, Role[]>();
+    (roles ?? []).forEach((r: any) => {
+      const arr = map.get(r.user_id) ?? [];
+      arr.push(r.role);
+      map.set(r.user_id, arr);
+    });
+    setRows((profs ?? []).map((p: any) => ({ id: p.id, full_name: p.full_name, email: p.email, roles: map.get(p.id) ?? [] })));
+  }
+  useEffect(() => { void load(); }, []);
+
+  async function setRole(email: string, role: Role) {
+    const { error } = await supabase.rpc("admin_set_role", { _email: email, _role: role });
+    if (error) toast.error(error.message); else { toast.success(`Granted ${role}`); load(); }
+  }
+  async function removeRole(uid: string, role: Role) {
+    if (!confirm(`Remove ${role} role?`)) return;
+    const { error } = await supabase.rpc("admin_remove_role", { _user_id: uid, _role: role });
+    if (error) toast.error(error.message); else { toast.success("Role removed"); load(); }
+  }
+
+  const filtered = rows.filter((r) =>
+    !q || r.full_name.toLowerCase().includes(q.toLowerCase()) || r.email.toLowerCase().includes(q.toLowerCase())
   );
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">Manage your organization's volunteer database.</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search volunteers…" className="w-64 border-border/60 bg-card pl-9" />
-          </div>
-          <Button variant="outline" className="border-border/60"><Filter className="h-4 w-4" /> Filter</Button>
-          <AddVolunteerDialog />
-        </div>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Input placeholder="Search by name or email…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-sm" />
+        {isAdmin && <PromoteDialog onDone={load} />}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-card-gradient shadow-card">
-        <table className="w-full text-sm">
-          <thead className="border-b border-border/40 bg-background/30 text-left text-xs uppercase tracking-wider text-muted-foreground">
-            <tr>
-              <th className="px-6 py-3">Volunteer</th>
-              <th className="px-6 py-3">Skills</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Hours</th>
-              <th className="px-6 py-3">Location</th>
-              <th className="px-6 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/40">
-            {filtered.map((v) => (
-              <tr key={v.id} className="transition-colors hover:bg-accent/30">
-                <td className="px-6 py-4">
+      <div className="rounded-xl border border-border/60 bg-card-gradient">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Person</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Roles</TableHead>
+              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell>
                   <div className="flex items-center gap-3">
-                    <img src={v.avatar} alt={v.name} className="h-9 w-9 rounded-full bg-muted" />
-                    <div>
-                      <div className="font-medium">{v.name}</div>
-                      <div className="text-xs text-muted-foreground">{v.email}</div>
-                    </div>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-gradient text-xs font-semibold text-primary-foreground">{initials(r.full_name || r.email)}</div>
+                    <div className="font-medium">{r.full_name || "—"}</div>
                   </div>
-                </td>
-                <td className="px-6 py-4">
+                </TableCell>
+                <TableCell className="text-muted-foreground">{r.email}</TableCell>
+                <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {v.skills.map((s) => <Badge key={s} variant="secondary" className="bg-secondary/60">{s}</Badge>)}
+                    {r.roles.map((role) => (
+                      <span key={role} className="rounded-full border border-border/60 px-2 py-0.5 text-[10px] capitalize">{role}</span>
+                    ))}
                   </div>
-                </td>
-                <td className="px-6 py-4"><StatusBadge status={v.status} /></td>
-                <td className="px-6 py-4 font-medium">{formatNumber(v.hours)}</td>
-                <td className="px-6 py-4 text-muted-foreground">{v.location}</td>
-                <td className="px-6 py-4">
-                  <div className="flex justify-end gap-1">
-                    <Button size="icon" variant="ghost"><Pencil className="h-4 w-4" /></Button>
-                    <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                </td>
-              </tr>
+                </TableCell>
+                {isAdmin && (
+                  <TableCell className="text-right">
+                    {!r.roles.includes("coordinator") ? (
+                      <Button size="sm" variant="outline" onClick={() => setRole(r.email, "coordinator")}>
+                        <ShieldCheck className="mr-1 h-3.5 w-3.5" /> Make coordinator
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={() => removeRole(r.id, "coordinator")}>
+                        <ShieldOff className="mr-1 h-3.5 w-3.5" /> Revoke coordinator
+                      </Button>
+                    )}
+                  </TableCell>
+                )}
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-        <div className="flex items-center justify-between border-t border-border/40 px-6 py-3 text-xs text-muted-foreground">
-          <span>Showing {filtered.length} of {volunteers.length} volunteers</span>
-          <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost"><ChevronLeft className="h-4 w-4" /></Button>
-            <span className="px-2">Page 1 of 4</span>
-            <Button size="icon" variant="ghost"><ChevronRight className="h-4 w-4" /></Button>
-          </div>
-        </div>
+            {filtered.length === 0 && (
+              <TableRow><TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">No people found.</TableCell></TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: "active" | "inactive" | "pending" }) {
-  const map = {
-    active: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-    inactive: "bg-muted text-muted-foreground border-border",
-    pending: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  } as const;
-  return <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${map[status]}`}>{status}</span>;
-}
+function PromoteDialog({ onDone }: { onDone: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<Role>("coordinator");
 
-function AddVolunteerDialog() {
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const { error } = await supabase.rpc("admin_set_role", { _email: email.trim(), _role: role });
+    if (error) toast.error(error.message);
+    else { toast.success(`Granted ${role} to ${email}`); setOpen(false); setEmail(""); onDone(); }
+  }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-brand-gradient shadow-glow hover:opacity-90"><Plus className="h-4 w-4" /> Add Volunteer</Button>
+        <Button className="bg-brand-gradient shadow-glow"><UserPlus className="mr-1 h-4 w-4" /> Assign role</Button>
       </DialogTrigger>
-      <DialogContent className="bg-card-gradient border-border/60">
-        <DialogHeader>
-          <DialogTitle>Add new volunteer</DialogTitle>
-        </DialogHeader>
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2"><Label>Full name</Label><Input placeholder="Jane Doe" /></div>
-            <div className="space-y-2"><Label>Email</Label><Input type="email" placeholder="jane@org.org" /></div>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Assign a role</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-2"><Label>User email</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@example.com" /></div>
+          <div className="space-y-2"><Label>Role</Label>
+            <Select value={role} onValueChange={(v) => setRole(v as Role)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="coordinator">Coordinator</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2"><Label>Phone</Label><Input placeholder="+1 555-0000" /></div>
-            <div className="space-y-2"><Label>Location</Label><Input placeholder="City, State" /></div>
-          </div>
-          <div className="space-y-2"><Label>Skills (comma-separated)</Label><Input placeholder="Teaching, First Aid" /></div>
+          <DialogFooter><Button type="submit" className="bg-brand-gradient shadow-glow">Grant</Button></DialogFooter>
         </form>
-        <DialogFooter>
-          <Button variant="outline" className="border-border/60">Cancel</Button>
-          <Button className="bg-brand-gradient">Add Volunteer</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

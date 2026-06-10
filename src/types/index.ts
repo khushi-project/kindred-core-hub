@@ -1,66 +1,72 @@
-export type Role = "admin" | "volunteer" | "coordinator";
+export type Role = "admin" | "coordinator" | "volunteer";
+export type EventStatus = "upcoming" | "ongoing" | "completed" | "cancelled";
+export type AttendanceStatus = "present" | "absent" | "late";
+export type TaskPriority = "low" | "medium" | "high";
+export type TaskStatus = "todo" | "in-progress" | "done";
 
-export interface Volunteer {
+export interface Profile {
   id: string;
-  name: string;
+  full_name: string;
   email: string;
-  avatar: string;
-  skills: string[];
-  status: "active" | "inactive" | "pending";
-  hours: number;
-  joinedAt: string;
-  phone?: string;
-  location?: string;
+  phone: string | null;
+  location: string | null;
+  avatar_url: string | null;
+  skills: string[] | null;
+  created_at: string;
 }
 
-export interface Event {
+export interface EventRow {
   id: string;
   title: string;
   description: string;
-  date: string;
+  event_date: string;
   location: string;
   category: string;
-  banner: string;
-  status: "upcoming" | "ongoing" | "completed";
-  volunteersAssigned: number;
+  banner_url: string | null;
+  status: EventStatus;
   capacity: number;
+  created_by: string | null;
+  created_at: string;
 }
 
-export interface AttendanceRecord {
+export interface AttendanceRow {
   id: string;
-  volunteerId: string;
-  volunteerName: string;
-  avatar: string;
-  eventId: string;
-  eventTitle: string;
-  date: string;
-  status: "present" | "absent" | "late";
+  event_id: string;
+  volunteer_id: string;
+  status: AttendanceStatus;
   hours: number;
+  marked_by: string | null;
+  marked_at: string;
 }
 
-export interface Task {
+export interface TaskRow {
   id: string;
   title: string;
-  assignee: string;
-  avatar: string;
-  dueDate: string;
-  priority: "low" | "medium" | "high";
-  status: "todo" | "in-progress" | "done";
+  description: string | null;
+  event_id: string | null;
+  assignee_id: string | null;
+  due_date: string | null;
+  priority: TaskPriority;
+  status: TaskStatus;
+  created_by: string | null;
+  created_at: string;
 }
 
-export interface NotificationItem {
+export interface NotificationRow {
   id: string;
+  user_id: string;
   title: string;
   description: string;
-  time: string;
-  type: "info" | "success" | "warning" | "alert";
+  type: string;
   read: boolean;
+  created_at: string;
 }
 
-export interface User {
+export interface CertificateRow {
   id: string;
-  name: string;
-  email: string;
-  role: Role;
-  avatar?: string;
+  event_id: string;
+  volunteer_id: string;
+  certificate_code: string;
+  hours: number;
+  issued_at: string;
 }

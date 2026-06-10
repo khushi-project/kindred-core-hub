@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -21,11 +22,17 @@ import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settin
 import { Route as DashboardReportsRouteImport } from './routes/dashboard.reports'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardEventsRouteImport } from './routes/dashboard.events'
+import { Route as DashboardCertificatesRouteImport } from './routes/dashboard.certificates'
 import { Route as DashboardAttendanceRouteImport } from './routes/dashboard.attendance'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -83,6 +90,11 @@ const DashboardEventsRoute = DashboardEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardCertificatesRoute = DashboardCertificatesRouteImport.update({
+  id: '/certificates',
+  path: '/certificates',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardAttendanceRoute = DashboardAttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
@@ -94,8 +106,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
+  '/dashboard/certificates': typeof DashboardCertificatesRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/reports': typeof DashboardReportsRoute
@@ -108,8 +122,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
+  '/dashboard/certificates': typeof DashboardCertificatesRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/reports': typeof DashboardReportsRoute
@@ -124,8 +140,10 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
+  '/dashboard/certificates': typeof DashboardCertificatesRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/reports': typeof DashboardReportsRoute
@@ -141,8 +159,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/dashboard/attendance'
+    | '/dashboard/certificates'
     | '/dashboard/events'
     | '/dashboard/notifications'
     | '/dashboard/reports'
@@ -155,8 +175,10 @@ export interface FileRouteTypes {
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/dashboard/attendance'
+    | '/dashboard/certificates'
     | '/dashboard/events'
     | '/dashboard/notifications'
     | '/dashboard/reports'
@@ -170,8 +192,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/dashboard/attendance'
+    | '/dashboard/certificates'
     | '/dashboard/events'
     | '/dashboard/notifications'
     | '/dashboard/reports'
@@ -186,6 +210,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
 }
 
@@ -196,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -275,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEventsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/certificates': {
+      id: '/dashboard/certificates'
+      path: '/certificates'
+      fullPath: '/dashboard/certificates'
+      preLoaderRoute: typeof DashboardCertificatesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/attendance': {
       id: '/dashboard/attendance'
       path: '/attendance'
@@ -287,6 +326,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAttendanceRoute: typeof DashboardAttendanceRoute
+  DashboardCertificatesRoute: typeof DashboardCertificatesRoute
   DashboardEventsRoute: typeof DashboardEventsRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardReportsRoute: typeof DashboardReportsRoute
@@ -298,6 +338,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAttendanceRoute: DashboardAttendanceRoute,
+  DashboardCertificatesRoute: DashboardCertificatesRoute,
   DashboardEventsRoute: DashboardEventsRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardReportsRoute: DashboardReportsRoute,
@@ -316,18 +357,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

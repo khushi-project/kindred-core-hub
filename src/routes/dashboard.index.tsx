@@ -69,13 +69,25 @@ function OverviewPage() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {(isAdmin || isCoordinator) && (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {isAdmin && (
           <>
             <StatCard label="Total events" value={String(stats.events)} icon={Calendar} />
+            <StatCard label="Upcoming" value={String(stats.upcoming)} icon={Calendar} />
+            <StatCard label="Ongoing" value={String(stats.ongoing)} icon={Calendar} />
+            <StatCard label="Completed" value={String(stats.completed)} icon={ClipboardCheck} />
+            <StatCard label="Cancelled" value={String(stats.cancelled)} icon={Calendar} />
+            <StatCard label="Volunteers" value={String(stats.volunteers)} icon={Users} />
+            <StatCard label="Coordinators" value={String(stats.coordinators)} icon={ShieldCheck} />
+            <StatCard label="Certificates" value={String(stats.certs + 0)} icon={Award} />
+          </>
+        )}
+        {isCoordinator && !isAdmin && (
+          <>
             <StatCard label="Active events" value={String(stats.active)} icon={Calendar} />
             <StatCard label="Completed" value={String(stats.completed)} icon={ClipboardCheck} />
             <StatCard label="Volunteers" value={String(stats.volunteers)} icon={Users} />
+            <StatCard label="Total events" value={String(stats.events)} icon={Calendar} />
           </>
         )}
         {isVolunteer && !isAdmin && !isCoordinator && (
@@ -87,6 +99,7 @@ function OverviewPage() {
           </>
         )}
       </div>
+
 
       <div className="rounded-xl border border-border/60 bg-card-gradient p-6">
         <div className="mb-4 flex items-center justify-between">

@@ -40,8 +40,8 @@ function SignupPage() {
     const { error } = await signUp(email.trim(), password, full_name.trim(), { role, phone: phone.trim() || undefined });
     setLoading(false);
     if (error) { toast.error(error); return; }
-    toast.success(`Account created — welcome${role === "coordinator" ? ", Coordinator" : ""}!`);
-    navigate({ to: "/dashboard" });
+    toast.success(`Account created as ${role}. Please sign in to continue.`);
+    navigate({ to: "/login" });
   }
 
   return (

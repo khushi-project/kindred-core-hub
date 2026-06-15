@@ -360,6 +360,37 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* JOIN THE MOVEMENT CTA */}
+      <section className="mx-auto max-w-7xl px-6 pb-24">
+        <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-brand-gradient p-10 text-center shadow-elegant md:p-16">
+          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/30 blur-3xl" aria-hidden />
+          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-accent/30 blur-3xl" aria-hidden />
+          <div className="relative">
+            <HandHeart className="mx-auto h-10 w-10 text-primary-foreground" />
+            <h2 className="mt-4 font-display text-3xl font-bold text-primary-foreground md:text-5xl">
+              Your community is waiting for you.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-primary-foreground/90 md:text-lg">
+              Join thousands of volunteers turning everyday hours into extraordinary change.
+              It starts with one click.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link to={user ? "/dashboard" : "/signup"}>
+                <Button size="lg" variant="secondary" className="shadow-glow transition hover:scale-[1.03]">
+                  {user ? "Open my dashboard" : "Join the movement"} <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/login">
+                <Button size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10">
+                  I already have an account
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
       {/* FOOTER */}
       <footer className="border-t border-border/40 bg-background/40">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 md:grid-cols-4">

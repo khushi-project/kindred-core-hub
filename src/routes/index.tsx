@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Heart, ArrowRight, Users, Calendar, ClipboardCheck, Award, ShieldCheck, BarChart3,
   Bell, UserCog, UserPlus, CheckCircle2, Mail, Phone, MapPin, Loader2, Facebook, Twitter, Linkedin, Instagram, Menu, X,
+  Sparkles, Sprout, HandHeart, Globe2, Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import heroVolunteers from "@/assets/hero-volunteers.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({

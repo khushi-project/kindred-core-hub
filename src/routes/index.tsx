@@ -108,24 +108,68 @@ function LandingPage() {
       </header>
 
       {/* HERO */}
-      <section className="mx-auto max-w-7xl px-6 py-20 text-center md:py-28">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground">
-          <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Built for professional NGOs and organizations
+      <section className="relative mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <div className="animate-fade-in">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              <Sparkles className="h-3.5 w-3.5" /> Join 10,000+ changemakers worldwide
+            </div>
+            <h1 className="mt-6 font-display text-4xl font-bold leading-[1.05] md:text-6xl">
+              Be the reason <span className="text-gradient">someone smiles</span> today.
+            </h1>
+            <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
+              Volunc connects passionate volunteers with meaningful causes. Plant trees, mentor kids,
+              feed communities — every hour you give writes a story worth telling.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link to={user ? "/dashboard" : "/signup"}>
+                <Button size="lg" className="bg-brand-gradient shadow-glow transition hover:scale-[1.02] hover:opacity-95">
+                  <HandHeart className="mr-2 h-5 w-5" />
+                  {user ? "Open dashboard" : "Start volunteering"} <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
+              <a href="#how"><Button size="lg" variant="outline" className="border-border/60">See how it works</Button></a>
+            </div>
+            <div className="mt-8 flex items-center gap-6 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Free forever</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> 2-min signup</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Real impact</div>
+            </div>
+          </div>
+          <div className="relative animate-scale-in">
+            <div className="absolute -inset-6 rounded-3xl bg-brand-gradient opacity-30 blur-3xl" aria-hidden />
+            <div className="relative overflow-hidden rounded-3xl border border-border/60 shadow-elegant">
+              <img
+                src={heroVolunteers}
+                alt="Diverse volunteers planting a tree together at golden hour"
+                width={1536}
+                height={1024}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute bottom-4 left-4 right-4 rounded-2xl glass p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gradient shadow-glow">
+                    <Sprout className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">12,438 trees planted</div>
+                    <div className="text-xs text-muted-foreground">by volunteers this month</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <h1 className="mx-auto mt-6 max-w-4xl font-display text-4xl font-bold leading-tight md:text-6xl">
-          Manage Volunteers, Events & Coordination <span className="text-gradient">Efficiently.</span>
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground md:text-lg">
-          A smart volunteer management platform to organize events, track volunteers, assign coordinators,
-          generate certificates, and manage everything seamlessly.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <Link to={user ? "/dashboard" : "/signup"}>
-            <Button size="lg" className="bg-brand-gradient shadow-glow hover:opacity-90">
-              {user ? "Open dashboard" : "Get started"} <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
-          </Link>
-          <a href="#features"><Button size="lg" variant="outline" className="border-border/60">Explore features</Button></a>
+      </section>
+
+      {/* MOTIVATIONAL QUOTE */}
+      <section className="mx-auto max-w-5xl px-6 pb-16">
+        <div className="relative rounded-3xl border border-border/60 bg-card-gradient p-8 text-center shadow-card md:p-12">
+          <Quote className="mx-auto h-8 w-8 text-primary opacity-70" />
+          <p className="mx-auto mt-4 max-w-3xl font-display text-xl font-medium leading-relaxed md:text-2xl">
+            "The best way to find yourself is to lose yourself in the service of others."
+          </p>
+          <div className="mt-3 text-sm text-muted-foreground">— Mahatma Gandhi</div>
         </div>
       </section>
 
@@ -133,18 +177,46 @@ function LandingPage() {
       <section className="mx-auto max-w-7xl px-6 pb-20">
         <div className="grid gap-4 rounded-2xl border border-border/60 bg-card-gradient p-6 shadow-elegant sm:grid-cols-2 md:grid-cols-4">
           {[
-            { label: "Total volunteers", value: stats.volunteers },
-            { label: "Total events", value: stats.events },
-            { label: "Active events", value: stats.active },
-            { label: "Certificates issued", value: stats.certs },
+            { icon: Users, label: "Volunteers joined", value: stats.volunteers },
+            { icon: Calendar, label: "Events organized", value: stats.events },
+            { icon: Sprout, label: "Active right now", value: stats.active },
+            { icon: Award, label: "Lives touched", value: stats.certs },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <div className="font-display text-3xl font-bold text-gradient md:text-4xl">{s.value.toLocaleString()}</div>
+              <s.icon className="mx-auto h-5 w-5 text-primary" />
+              <div className="mt-2 font-display text-3xl font-bold text-gradient md:text-4xl">{s.value.toLocaleString()}+</div>
               <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* WHY VOLUNTEER */}
+      <section className="mx-auto max-w-7xl px-6 pb-24">
+        <div className="text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <HandHeart className="h-3.5 w-3.5" /> Why volunteer with us
+          </div>
+          <h2 className="mt-4 font-display text-3xl font-bold md:text-4xl">Small actions. <span className="text-gradient">Massive ripples.</span></h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">Every event you join, every hour you give — multiplied across a community of thousands.</p>
+        </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {[
+            { icon: Globe2, title: "Real impact", body: "Not just hours logged — trees planted, meals served, kids mentored. Track the difference you make." },
+            { icon: Users, title: "Find your people", body: "Meet humans who care. Build friendships around causes you both believe in." },
+            { icon: Award, title: "Grow & be recognized", body: "Earn verifiable certificates, build a portfolio of impact, and unlock new opportunities." },
+          ].map((f) => (
+            <div key={f.title} className="group rounded-2xl border border-border/60 bg-card-gradient p-6 shadow-card transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-glow">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-gradient shadow-glow transition group-hover:scale-110">
+                <f.icon className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <h3 className="mt-5 font-display text-lg font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       {/* FEATURES */}
       <section id="features" className="mx-auto max-w-7xl px-6 pb-24">
